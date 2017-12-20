@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.wxb.mapper.UserMapper">
+    <select id="selectUser" parameterType="java.lang.String" resultType="cn.wxb.domain.User">
+      SELECT id,pile_number AS name FROM xx_auth_status WHERE id = #{1}
+    </select>
+    <insert id="insertUser" parameterType="cn.wxb.domain.User">
+        INSERT INTO xx_auth_status (pile_number) VALUES (#{name})
+    </insert>
+</mapper>

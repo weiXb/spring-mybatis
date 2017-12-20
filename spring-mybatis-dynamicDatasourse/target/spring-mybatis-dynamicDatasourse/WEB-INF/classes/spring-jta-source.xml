@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+
+    <!-- com.atomikos.jdbc.nonxa.AtomikosNonXADataSourceBean -->
+    <bean id="abstractXADataSource" class="com.atomikos.jdbc.AtomikosDataSourceBean" abstract="true">
+        <property name="xaDataSourceClassName"
+                  value="com.alibaba.druid.pool.xa.DruidXADataSource"/>  <!-- SQLErrorCodes loaded: [DB2, Derby, H2, HSQL, Informix, MS-SQL, MySQL, Oracle, PostgreSQL, Sybase, Hana]  -->
+        <property name="poolSize" value="10"/>
+        <property name="minPoolSize" value="10"/>
+        <property name="maxPoolSize" value="30"/>
+        <property name="borrowConnectionTimeout" value="60"/>
+        <property name="reapTimeout" value="20"/>
+        <property name="maxIdleTime" value="60"/>
+        <property name="maintenanceInterval" value="60"/>
+        <property name="loginTimeout" value="60"/>
+        <property name="maxLifetime" value="20"/>
+    </bean>
+    <bean id="master" parent="abstractXADataSource">
+        <property name="uniqueResourceName" value="masterDB"/>
+        <property name="xaProperties">
+            <props>
+                <prop key="driverClassName">org.gjt.mm.mysql.Driver</prop>
+                <prop key="url">${jdbcMaster.url}</prop>
+                <prop key="password">${jdbcMaster.password}</prop>
+                <!--  <prop key="user">${jdbc.username}</prop> --> <!-- mysql -->
+                <prop key="username">${jdbcMaster.username}</prop>   <!-- durid -->
+                <prop key="initialSize">0</prop>
+                <prop key="maxActive">20</prop> <!-- 若不配置则代码执行"{dataSource-1} inited"此处停止  -->
+                <prop key="minIdle">0</prop>
+                <prop key="maxWait">60000</prop>
+                <prop key="validationQuery">SELECT 1</prop>
+                <prop key="testOnBorrow">false</prop>
+                <prop key="testOnReturn">false</prop>
+                <prop key="testWhileIdle">true</prop>
+                <prop key="removeAbandoned">true</prop>
+                <prop key="removeAbandonedTimeout">1800</prop>
+                <prop key="logAbandoned">true</prop>
+                <prop key="filters">mergeStat</prop>
+            </props>
+        </property>
+    </bean>
+    <bean id="slaver" parent="abstractXADataSource">
+        <property name="uniqueResourceName" value="slaveDB"/>
+        <property name="xaProperties">
+            <props>
+                <prop key="driverClassName">org.gjt.mm.mysql.Driver</prop>
+                <prop key="url">${jdbcSlave.url}</prop>
+                <prop key="password">${jdbcSlave.password}</prop>
+                <!--  <prop key="user">${jdbc.username}</prop> -->
+                <prop key="username">${jdbcSlave.username}</prop>
+                <prop key="initialSize">0</prop>
+                <prop key="maxActive">20</prop>
+                <prop key="minIdle">0</prop>
+                <prop key="maxWait">60000</prop>
+                <prop key="validationQuery">SELECT 1</prop>
+                <prop key="testOnBorrow">false</prop>
+                <prop key="testOnReturn">false</prop>
+                <prop key="testWhileIdle">true</prop>
+                <prop key="removeAbandoned">true</prop>
+                <prop key="removeAbandonedTimeout">1800</prop>
+                <prop key="logAbandoned">true</prop>
+                <prop key="filters">mergeStat</prop>
+            </props>
+        </property>
+    </bean>
+
+</beans>

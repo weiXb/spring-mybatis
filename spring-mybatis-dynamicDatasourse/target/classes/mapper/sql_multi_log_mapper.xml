@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.wxb.mapper.LogMapper">
+    <insert id="insertLog" parameterType="cn.wxb.domain.User">
+        INSERT INTO charging_query_log (ID,seq,operatorID,create_time,direction,log_type) VALUES ("123","123",#{name},NOW(),1,0)
+    </insert>
+</mapper>

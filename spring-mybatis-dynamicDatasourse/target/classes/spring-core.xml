@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/context
+        http://www.springframework.org/schema/context/spring-context.xsd
+        http://www.springframework.org/schema/tx
+        http://www.springframework.org/schema/tx/spring-tx.xsd
+        http://www.springframework.org/schema/aop
+        http://www.springframework.org/schema/aop/spring-aop.xsd">
+
+
+    <!--多数据源，支持多数据源下的多数据库事务回滚-->
+
+    <context:component-scan base-package="cn.wxb">
+        <context:exclude-filter type="annotation" expression="org.springframework.stereotype.Controller"/>
+    </context:component-scan>
+
+    <aop:aspectj-autoproxy proxy-target-class="true"/>
+
+    <context:property-placeholder location="classpath:jdbc.properties"/>
+
+
+    <import resource="classpath:spring-jta-source.xml"/>
+
+
+    <bean id="masterSqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+        <property name="dataSource" ref="master"/>
+        <property name="configLocation" value="classpath:mybatis-config.xml"/>
+        <property name="mapperLocations" value="classpath:mapper/*.xml"/>
+    </bean>
+
+    <bean id="slaverSqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+        <property name="dataSource" ref="slaver"/>
+        <property name="configLocation" value="classpath:mybatis-config.xml"/>
+        <property name="mapperLocations" value="classpath:mapper/*.xml"/>
+    </bean>
+
+    <bean id="masterSqlSession" class="org.mybatis.spring.SqlSessionTemplate">
+        <constructor-arg ref="masterSqlSessionFactory"/>
+    </bean>
+
+    <bean id="slaverSqlSession" class="org.mybatis.spring.SqlSessionTemplate">
+        <constructor-arg ref="slaverSqlSessionFactory"/>
+    </bean>
+
+    <!--<bean id="userInterfaceMapper" class="org.mybatis.spring.mapper.MapperFactoryBean">-->
+        <!--<property name="sqlSessionFactory" ref="masterSqlSessionFactory" />-->
+        <!--<property name="mapperInterface" value="cn.wxb.mapper.UserInterfaceMapper" />-->
+    <!--</bean>-->
+
+    <!--<bean id="userMapper" class="org.mybatis.spring.mapper.MapperFactoryBean">-->
+        <!--<property name="sqlSessionFactory" ref="masterSqlSessionFactory" />-->
+        <!--<property name="mapperInterface" value="cn.wxb.mapper.UserMapper" />-->
+    <!--</bean>-->
+
+    <!--<bean id="logMapper" class="org.mybatis.spring.mapper.MapperFactoryBean">-->
+        <!--<property name="sqlSessionFactory" ref="slaverSqlSessionFactory" />-->
+        <!--<property name="mapperInterface" value="cn.wxb.mapper.LogMapper" />-->
+    <!--</bean>-->
+
+    <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+        <property name="basePackage" value="cn.wxb.mapper"/>
+    </bean>
+
+
+    <!--多数据源的分布式事务配置-->
+    <bean id="atomikosTransactionManager" class="com.atomikos.icatch.jta.UserTransactionManager"  init-method="init" destroy-method="close">
+        <property name="forceShutdown" value="true"/>
+    </bean>
+
+    <bean id="atomikosUserTransaction" class="com.atomikos.icatch.jta.UserTransactionImp">
+        <property name="transactionTimeout" value="300"/>
+    </bean>
+
+    <bean id="transactionManager" class="org.springframework.transaction.jta.JtaTransactionManager">
+        <property name="transactionManager" ref="atomikosTransactionManager"/>
+        <property name="userTransaction" ref="atomikosUserTransaction"/>
+        <!-- 必须设置，否则程序出现异常 JtaTransactionManager does not support custom isolation levels by default -->
+        <property name="allowCustomIsolationLevels" value="true"/>
+
+    </bean>
+
+    <!--设置spring的声明式事务-->
+
+    <tx:annotation-driven transaction-manager="transactionManager"/>
+
+</beans>
