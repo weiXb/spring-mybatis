@@ -48,20 +48,20 @@
         <constructor-arg ref="slaverSqlSessionFactory"/>
     </bean>
 
-    <!--<bean id="userInterfaceMapper" class="org.mybatis.spring.mapper.MapperFactoryBean">-->
-        <!--<property name="sqlSessionFactory" ref="masterSqlSessionFactory" />-->
-        <!--<property name="mapperInterface" value="cn.wxb.mapper.UserInterfaceMapper" />-->
-    <!--</bean>-->
+    <bean id="userInterfaceMapper" class="org.mybatis.spring.mapper.MapperFactoryBean">
+        <property name="sqlSessionFactory" ref="masterSqlSessionFactory" />
+        <property name="mapperInterface" value="cn.wxb.mapper.UserInterfaceMapper" />
+    </bean>
 
-    <!--<bean id="userMapper" class="org.mybatis.spring.mapper.MapperFactoryBean">-->
-        <!--<property name="sqlSessionFactory" ref="masterSqlSessionFactory" />-->
-        <!--<property name="mapperInterface" value="cn.wxb.mapper.UserMapper" />-->
-    <!--</bean>-->
+    <bean id="userMapper" class="org.mybatis.spring.mapper.MapperFactoryBean">
+        <property name="sqlSessionFactory" ref="masterSqlSessionFactory" />
+        <property name="mapperInterface" value="cn.wxb.mapper.UserMapper" />
+    </bean>
 
-    <!--<bean id="logMapper" class="org.mybatis.spring.mapper.MapperFactoryBean">-->
-        <!--<property name="sqlSessionFactory" ref="slaverSqlSessionFactory" />-->
-        <!--<property name="mapperInterface" value="cn.wxb.mapper.LogMapper" />-->
-    <!--</bean>-->
+    <bean id="logMapper" class="org.mybatis.spring.mapper.MapperFactoryBean">
+        <property name="sqlSessionFactory" ref="slaverSqlSessionFactory" />
+        <property name="mapperInterface" value="cn.wxb.mapper.LogMapper" />
+    </bean>
 
     <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
         <property name="basePackage" value="cn.wxb.mapper"/>
